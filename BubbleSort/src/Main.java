@@ -4,12 +4,89 @@ import java.util.Random;
 public class Main {
 //    static int[] array;
     public static void main(String[] args) {
-        int[] array = genArray(10);
+        int[] array = genArray(50, 1000);
         print(array);
-        print(mergeSort(array));
+        print(radixSort(array, 3));
     }
 
+    public static int[] radixSort(int[] array, int d){
+        int [] result = new int [array.length];
+        for (int j = 0; j < d; j++) {
+            int[] B = new int[array.length];
+            int[] C = new int[11];
+            for (int i = 0; i < array.length; i++) {
+                C[getRadix(array[i],j)]++;
+            }
+            for (int i = 1; i < C.length; i++) {
+                C[i] += C[i-1];
+            }
+            for (int i = array.length-1; i >= 0 ; i--) {
+                B[C[getRadix(array[i],j)] - 1] = array[i];
+                C[getRadix(array[i],j)]--;
+            }
+            result = B;
+        }
+        return result;
+    }
 
+    public static int getRadix(int number, int index){
+        int divider = (int)Math.pow(10, index);
+        int temp = number / divider;
+        return temp % 10;
+    }
+
+    public static int[] countSort(int[] array){
+        int[] B = new int[array.length];
+        int[] C = new int[11];
+        for (int i = 0; i < array.length; i++) {
+            C[array[i]]++;
+        }
+        for (int i = 1; i < C.length; i++) {
+            C[i] += C[i-1];
+        }
+        for (int i = array.length-1; i >= 0 ; i--) {
+            B[C[array[i]] - 1] = array[i];
+            C[array[i]]--;
+        }
+        return B;
+    }
+
+    public static int[] quickSort(int[] array){
+        quickSort(array, 0, array.length);
+        return array;
+    }
+
+    public static void quickSort(int[] array, int left, int right){
+        if(left < right){
+            int p = quickSortPartition(array,left,right);
+//            System.out.println(p);
+//            print(array);
+            quickSort(array,left,p);
+            quickSort(array,p+1,right);
+        }
+    }
+
+    public static int quickSortPartition(int[] array, int start, int end){
+        Random r = new Random();
+        int t = r.nextInt(end - start) + start;
+        swap(array, end-1, t);
+        int j = start - 1;
+        int x = array[end-1];
+        for (int i = start; i < end - 1; i++) {
+            if(array[i] < x){
+                j++;
+                swap(array,i,j);
+            }
+        }
+        swap(array,end-1, j+1);
+        return j+1;
+    }
+
+    public static void swap(int[] array,int p, int q){
+        int temp = array[p];
+        array[p] = array[q];
+        array[q] = temp;
+    }
 
     public static void print(int[] array){
         System.out.print("[");
@@ -22,11 +99,16 @@ public class Main {
         }
         System.out.println("");
     }
-    public static int [] genArray(int n){
+
+    public static void testHeapSort(int[] array){
+        long start = System.currentTimeMillis();
+//        lo
+    }
+    public static int [] genArray(int n, int bound){
         Random r = new Random();
         int[] array = new int[n];
         for (int i = 0; i < n; i++) {
-            array[i] = r.nextInt(100);
+            array[i] = r.nextInt(bound);
         }
         return array;
     }
